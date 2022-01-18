@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
-
+import React, { useState } from "react";
+import TodoList from "./Todo/Todo";
+import Context from "./context";
 function App() {
+  //массив элементов,передаваемый в Todo компонент в качестве свойства
+  //с применением хука useState для изменения сосотояния массива todos
+  const [todos, setTodos] = useState([
+    { id: 1, completed: false, title: "Learn JS" },
+    { id: 2, completed: false, title: "Learn React" },
+    { id: 3, completed: false, title: "Learn NodeJS" },
+  ]);
+  //определение функции toggleTodo,в которой с помощью функции-модификатора изменяется текущее
+  //состояние todos
+  function toggleTodo(id) {
+    setTodos(
+      todos.map((todo) => {
+        if (id === todo.id) {
+          todo.completed = !todo.completed;
+        }
+        return todo;
+      })
+    );
+  }
+  //функция удаления элемента
+  function removeTodo(id) {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  }
+  /*Каждый объект Context используется вместе с Provider компонентом, который позволяет дочерним
+   компонентам, использующим этот контекст, подписаться на его изменения.
+   Все потребители, которые являются потомками Provider, будут повторно рендериться, как только
+    проп value у Provider изменится.*/
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Context.Provider value={{ removeTodo }}>
+      <div className="wrapper">
+        <h2>Todo List</h2>
+
+        {todos.length ? (
+          <TodoList todos={todos} onToggle={toggleTodo} />
+        ) : (
+          <h3>No todos</h3>
+        )}
+      </div>
+    </Context.Provider>
   );
 }
 
